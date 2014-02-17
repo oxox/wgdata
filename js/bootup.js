@@ -47,4 +47,4 @@ var cbk = function(){
 
 loadJQ(cbk);
 
-})(jQuery,window["require"],window["define"],window["$script"]);
+})(window["jQuery"],window["require"],window["define"],window["$script"]);

@@ -229,8 +229,8 @@ J(function($,p,pub){
     pub.getPublicMods = function(cbk){
         var _params = {
             "act":"query",
-            "xn":"xdata",
-            "xk":"mods_-J8cz2Qpn7_rKE2jiImK",
+            "xn":"wgdata",
+            "xk":"mods_-JFzA5V68zvgTk6C2SFZ",
             "t":new Date().getTime()
         };
         var url = 'http://log.oxox.io/api.php',
@@ -307,7 +307,7 @@ J(function($,p,pub){
     pub.getPageConfigs = function(cbk){
         var _params = {
             "act":"query",
-            "xn":"xdata",
+            "xn":"wgdata",
             "xk":"pages",
             "t":new Date().getTime()
         };
@@ -345,7 +345,7 @@ J(function($,p,pub){
         */
         var _params = {
             "act":"query",
-            "xn":"xdata",
+            "xn":"wgdata",
             "t":new Date().getTime()
         };
         var url = 'http://log.oxox.io/api.php',
@@ -450,7 +450,7 @@ J(function($,p,pub){
      */
     pub.getCTags = function(rawForm){
         rawForm=rawForm||false;
-        var key = 'xdata_ctags_'+pub.bizInfo.pid,
+        var key = 'wgdata_ctags_'+pub.bizInfo.pid,
             rawData = localStorage[key],
             rawData1 = pub.getPrivateModsByCssSelector(),
             isRawData1Empty = Object.getOwnPropertyNames(rawData1).length==0;
@@ -494,7 +494,7 @@ J(function($,p,pub){
             isNew = true;
         };
         d[tagData.id]=tagData;
-        var key = 'xdata_ctags_'+pub.bizInfo.pid;
+        var key = 'wgdata_ctags_'+pub.bizInfo.pid;
         localStorage[key]=JSON.stringify(d);
         J.$win.trigger(pub.EVT.CTagUpdated,[(isNew?0:1),tagData]);
         return d;
@@ -512,7 +512,7 @@ J(function($,p,pub){
             return d;
         };
         delete d[id];
-        var key = 'xdata_ctags_'+pub.bizInfo.pid;
+        var key = 'wgdata_ctags_'+pub.bizInfo.pid;
         localStorage[key]=JSON.stringify(d);
         J.$win.trigger(pub.EVT.CTagUpdated,[-1,id]);
         return d;
