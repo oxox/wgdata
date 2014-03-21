@@ -2,13 +2,15 @@
 J(function($,p,pub){
     pub.id="data";
     var uid = null,
-        pid = window['yPageId']||'1000',
+        pid = Base64.encode(location.href), //页面唯一ID，易迅用yPageId，拍拍和网购没有，所以用url的base64码
         wsid=null,
         areaid=null,
         today = new Date(),
         ck = (document.cookie||''),
         isParamsReady = false;
     try{
+        pub.boss = ['6775494','8657580','765578'];
+        //从cookie中解析数据接口所需的基本参数
         uid = ck.split('yx_uid=')[1].split(';')[0];
         wsid=ck.split('wsid=')[1].split(';')[0];
         areaid=ck.split('areasInfo=');/*11/03 areaid 不再使用,为了保证接口完整性使用默认的S0001_1001*/
@@ -19,11 +21,18 @@ J(function($,p,pub){
             pid:pid,
             areaid:areaid
         };
-        pub.boss = ['6775494','8657580','765578'];
+        
         //接口所需参数是否准备好
         isParamsReady=true;
     }catch(e){
-        ////接口所需参数没准备好
+        //接口所需参数没准备好，用默认测试参数
+        pub.bizInfo = {
+            uid:'null',
+            wsid:"null",
+            pid:pid,
+            areaid:'null'
+        };
+
         J.log(i18n.t("ajax.paramError")+e.toString());
     };
     var clickStreamData = function(_type,_params,_cbk){
@@ -197,11 +206,20 @@ J(function($,p,pub){
         
         // S - 测试假数据
         
+        //概要数据
         var keyData0 = {"status":true,"data":{"timespan":"2014-03-21 00:00:00 至 2014-03-22 00:00:00","weekly":[],"today":[]},"total":{"pv":"89,674","uv":"-","click_num":"104,390","order_num":"4,479"},"timespan":"2014-03-21 00:00:00 至 2014-03-22 00:00:00"};
-        
+        pub["CurrentKeyData"] = keyData0;
+        //触发事件以便通知其他模块做相应的处理
+        J.$win.trigger(pub.EVT.KeyDataChange,[null,keyData0]);
+
+        //所有ytag的数据
         var clickData0 = {"status":true,"data":{"1473":{"click_num":1,"order_num":0,"page_tag":"91853","click_trans_rate":"0.00"},"1474":{"click_num":1,"order_num":0,"page_tag":"91950","click_trans_rate":"0.00"},"1475":{"click_num":1,"order_num":0,"page_tag":"93109","click_trans_rate":"0.00"},"1476":{"click_num":1,"order_num":0,"page_tag":"93156","click_trans_rate":"0.00"},"1477":{"click_num":1,"order_num":0,"page_tag":"92156","click_trans_rate":"0.00"},"1478":{"click_num":1,"order_num":0,"page_tag":"92851","click_trans_rate":"0.00"},"1479":{"click_num":1,"order_num":0,"page_tag":"92852","click_trans_rate":"0.00"},"1480":{"click_num":0,"order_num":2,"page_tag":"91504","click_trans_rate":"0.00"},"1481":{"click_num":0,"order_num":1,"page_tag":"93500","click_trans_rate":"0.00"},"1482":{"click_num":0,"order_num":1,"page_tag":"34818","click_trans_rate":"0.00"},"1483":{"click_num":0,"order_num":1,"page_tag":"37401","click_trans_rate":"0.00"},"1484":{"click_num":0,"order_num":2,"page_tag":"02013","click_trans_rate":"0.00"},"1485":{"click_num":0,"order_num":1,"page_tag":"04002","click_trans_rate":"0.00"},"1486":{"click_num":0,"order_num":1,"page_tag":"04004","click_trans_rate":"0.00"},"1487":{"click_num":0,"order_num":1,"page_tag":"04008","click_trans_rate":"0.00"},"1488":{"click_num":0,"order_num":1,"page_tag":"05016","click_trans_rate":"0.00"},"1489":{"click_num":0,"order_num":2,"page_tag":"05030","click_trans_rate":"0.00"},"1490":{"click_num":0,"order_num":3,"page_tag":"00000","click_trans_rate":"0.00"},"1491":{"click_num":0,"order_num":2,"page_tag":"80001","click_trans_rate":"0.00"},"1492":{"click_num":0,"order_num":1,"page_tag":"37839","click_trans_rate":"0.00"},"1493":{"click_num":0,"order_num":1,"page_tag":"88600","click_trans_rate":"0.00"},"MAX":18038,"MIN":0}};
-        
+        pub['CurrentClickData']=clickData0;
+        J.$win.trigger(pub.EVT.ClickDataChange,[null,clickData0]);
+
+
         cbk(null,keyData0,clickData0);
+
         return;
         // E - 测试假数据
         
