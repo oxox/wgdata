@@ -86,6 +86,7 @@ J(function($,p,pub){
             };//switch
         },
         getData:function(cbk){
+            alert(1);
             J.data.getAllCTags(function(items){
                 cbk(items);
             });
