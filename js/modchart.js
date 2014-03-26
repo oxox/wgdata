@@ -357,7 +357,7 @@ J(function($,p,pub){
             this.data[dateKey]=[];
             //从服务器取数据
             //采用按maxDateCountPerTime天分割轮询查询的方式，提升查询性能
-            this.getDataByDates(tagData.ytagIds,dates,dateKey,function(err,d){
+            this.getDataByDates(tagData.ptagIds,dates,dateKey,function(err,d){
                 me.isLoading=false;
                 me.jqXHR=null;
                 if(err){

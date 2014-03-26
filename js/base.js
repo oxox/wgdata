@@ -496,8 +496,8 @@ J.toEntities = function(tstr){
     return bstr;
 };
 J.textToHex=function (str) {
-      //escape对0-255以外的unicode值进行编码时输出%u****格式，例如：%u6267%u624b%u6cea%u773c
-      //将其中的%替换成\就是十六进制的
+      /*escape对0-255以外的unicode值进行编码时输出%u****格式，例如：%u6267%u624b%u6cea%u773c
+      将其中的%替换成\就是十六进制的*/
     var rStr = '',
         len = str.length;
     for(var i=0;i<len;i++){

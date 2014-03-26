@@ -11,7 +11,6 @@ J(function($,p,pub){
         hasAjaxError:false,
         $tip:null,
         keyData:null,
-        clickData:null,
         dateRangeData:{
             sdate0:null,
             edate0:null
@@ -20,7 +19,8 @@ J(function($,p,pub){
             J.$win.bind(J.ui.EVT.DataTypeChangeForPage,function(e,t){
                 p.keyChart.dataType=parseInt(t);
                 p.keyChart.render(p.keyChart.dataType,true);
-            }).bind(J.ui.EVT.Open,function(e,t){//每次打开时刷新一次数据
+            }).bind(J.ui.EVT.Open,function(e,t){
+                //每次打开时刷新一次数据
                 p.keyChart.$retweet.trigger('click.data');
             }).bind(J.ui.EVT.UIReady,function(e){
                 p.keyChart.onCoreUIReady();
@@ -122,10 +122,9 @@ J(function($,p,pub){
             this.showTip();
             this.isLoading=true;
             this.hasAjaxError=false;
-            this.clickData=null;
             this.keyData = null;
             //从服务器取数据
-            this.getDataByDates(dates,function(err,d1,d2){
+            this.getDataByDates(dates,function(err,d1){
                 me.isLoading=false;
                 if(err){
                     err = err.toString();
@@ -137,11 +136,12 @@ J(function($,p,pub){
                     return;
                 }
                 me.keyData=d1;
-                me.clickData = d2;
+
                 me.showTip(null);
                 me.render(me.dataType);
             });
         },
+        //从服务器取概要数据
         getDataByDates:function(dates,cbk){
             var dLen = dates.length,
                 sdate = J.data.getDateTimeStr(dates[0]),
@@ -154,12 +154,18 @@ J(function($,p,pub){
                 },
                 me = this;
             this.dateType = dateType;
-            J.data.getKeyAndClickData(_params,cbk);
+            //调用数据模块从服务器获取概要数据
+            J.data.getKeyData(_params,cbk);
         }//getDataByDates
     };
 
     pub.isToday = function(){
         return (p.keyChart.dateType==='today');
+    };
+
+    pub.getDateRangeData = function(){
+        var d = p.keyChart.dateRangeData;
+        return ({begintime:d.sdate0,endtime:d.edate0});
     };
 
 });

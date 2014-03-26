@@ -41,9 +41,10 @@ J(function($,p,pub){
                         </div>
                         <div class="data_box_bd">
                             <div id="dataChart1Filter" class="data_filter">
-                                <label class="on" data-type="1"><span data-i18n="nav.a">点击量</span></label>
-                                <label data-type="2"><span data-i18n="nav.b">下单量</span></label>
-                                <label data-type="3"><span data-i18n="nav.c">转化率</span></label>
+                                <label class="on" data-type="1"><span data-i18n="nav.a">下单量</span></label>
+                                <label data-type="2"><span data-i18n="nav.b">下单率</span></label>
+                                <label data-type="3"><span data-i18n="nav.c">付款量</span></label>
+                                <label data-type="4"><span data-i18n="nav.d">付款率</span></label>
                             </div>
                             <!--默认列表-->
                             <div id="dataList1" class="data_list">

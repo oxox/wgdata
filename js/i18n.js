@@ -29,6 +29,10 @@ yx_xdata_i18n['zh-CN'] = {
         "day1":"\u65E5",//日
         "date":"\u65E5\u671F",//日期
         "recent":"\u6700\u8FD1",//最近
+        "orderCnt":"\u4E0B\u5355\u91CF",//下单量
+        "orderRate":"\u4E0B\u5355\u7387",//下单率
+        "dealUser":"\u4ED8\u6B3E\u6570",//付款数
+        "dealRate":"\u4ED8\u6B3E\u7387",//付款率
         "moreCondition":"\u66F4\u591A\u6761\u4EF6",//更多条件
         "actFloor":"\u6D3B\u52A8\u697C\u5C42",//活动楼层
         "actHead":"\u6D3B\u52A8\u9996\u5C4F",//活动首屏
@@ -36,9 +40,10 @@ yx_xdata_i18n['zh-CN'] = {
         "actSidenavLeft":"\u6D3B\u52A8\u5DE6\u8FB9\u5BFC\u822A"//活动左边导航
     },
     nav:{
-        "a":"\u70B9\u51FB\u91CF",
-        "b":"\u4E0B\u5355\u91CF",
-        "c":"\u8F6C\u5316\u7387"
+        "a":"\u4E0B\u5355\u91CF",//下单量
+        "b":"\u4E0B\u5355\u7387",//下单率
+        "c":"\u4ED8\u6B3E\u6570",//付款数
+        "d":"\u4ED8\u6B3E\u7387"//付款率
     },
     chart:{
         resetZoom: '\u67E5\u770B\u5168\u56FE',

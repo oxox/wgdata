@@ -42,12 +42,15 @@ J(function($,p,pub){
         _init:function(){
             J.$win.bind(J.ui.EVT.DataTypeChangeForPage,function(e,t){
                 p.modRank.dataType = parseInt(t);
-                p.modRank.reload(true);//排序不一样，所以要重新渲染下树形菜单
+                p.modRank.reload(true);
+                //排序不一样，所以要重新渲染下树形菜单
             }).bind(J.data.EVT.CTagUpdated,function(e,opType,d){
                 p.modRank.onCTagUpdated(opType,d);
-            }).bind(J.data.EVT.ClickDataChange,function(e,d){
+            }).bind(J.data.EVT.PTagDataChange,function(e,err,d){
+                //ptag数据发生改变，刷新模块树
                 p.modRank.dataChangedAt=p.modRank.dataType;
                 p.modRank.reload();
+
             }).bind(J.ui.EVT.UIScroll,function(e,sTop){
                 //J.$win.trigger('oxmenuPositionNeedUpdating');
             }).bind(J.ui.EVT.UIReady,function(e){
@@ -58,10 +61,14 @@ J(function($,p,pub){
                 }).bind('mouseenter',function(e){
                     p.modRank.antiCover=false;
                 });
+
             }).bind(J.data.EVT.KeyDataChange,function(e,err,d){
                 if(err){
                     p.modRank.$d.html('');
                 }
+            }).bind(J.ui.EVT.Open,function(e,t){
+                /*每次打开时刷新一次数据*/
+                J.data.ptag.requestData(J.pagechart.getDateRangeData());
             });
         },
         onCTagUpdated:function(opType,d){
@@ -86,131 +93,15 @@ J(function($,p,pub){
             };//switch
         },
         getData:function(cbk){
-            J.data.getAllCTags(function(items){
+
+            var opts = {
+                "dataType":this.dataType,
+                "isToday":J.pagechart.isToday()
+            };
+
+            J.data.getAllCTags(opts,function(items){
                 cbk(items);
             });
-        },
-        parseTreeData:function(ctag,ptag){
-            ctag.pid = ptag.id;
-            ctag = this.parseSingleItem(ctag,ptag);
-            if ( (!ctag.babies) || (ctag.babies.length===0) ) {
-                return ctag;
-            };
-            var len = ctag.babies.length;
-            for(var i =0;i<len;i++){
-                this.parseTreeData(ctag.babies[i],ctag);
-            };//for
-            return ctag;
-        },
-        parseSingleItem:function(tempItem,parentItem){
-            tempItem.id = tempItem.isCustomYTag?tempItem.id:tempItem.ytagSelector;
-            tempItem.ytags = [];
-            tempItem.ytagIds =[];
-            tempItem.click_num=0;
-            tempItem.order_num=0;
-            tempItem.click_trans_rate=0;
-            tempItem.cl1="";
-            tempItem.clListSub = "";
-            tempItem.hasChildren = false;
-            if(tempItem.isCustomYTag){
-                switch(tempItem.type){
-                    case 1:
-                        //类名
-                        tempItem.ytags = J.data.getClickDataBySelector(tempItem.ytagSelector);
-                    break;
-                    case 2:
-                        //id
-                        tempItem.ytags = J.data.getClickDataByIds(tempItem.ytagSelector.split('|'));
-                    break;
-                };//switch
-            };
-            if(tempItem.readonly){
-                tempItem.cl1=' data_list_item1';
-            }
-            //含子级模块
-            if(tempItem.babies&&tempItem.babies.length>0){
-                tempItem.cl1+=' data_list_child';
-                tempItem.clListSub =tempItem.id=='0'?'':' data_list_con1';
-                tempItem.hasChildren = true;
-            }
-            ytagLen = tempItem.ytags.length;
-            for(var j=0;j<ytagLen;j++){
-                tempItem.ytagIds.push(tempItem.ytags[j].page_tag);
-                tempItem.click_num+=tempItem.ytags[j].click_num;
-                tempItem.order_num+=tempItem.ytags[j].order_num;
-            };//for
-            tempItem.click_trans_rate = tempItem.click_num==0?0:parseFloat( (tempItem.order_num*100/tempItem.click_num).toFixed(2) );
-            
-            switch(this.dataType){
-                case 1:
-                    tempItem.val = tempItem.click_num;
-                break;
-                case 2:
-                    tempItem.val = tempItem.order_num;
-                break;
-                case 3:
-                    tempItem.val = tempItem.click_trans_rate;
-                break;
-            };
-            tempItem = this.parseSingleItemToday(tempItem);
-
-            //根节点
-            if(tempItem.isRoot){
-                delete parentItem['id'];
-                $.extend(tempItem,parentItem);
-            };
-
-            //格式化
-            tempItem.val1 = this.dataType===3?tempItem.val:J.formatNum(tempItem.val+'');
-
-            //比例
-            tempItem.percent = (parentItem.val==0?0:tempItem.val*100/parentItem.val).toFixed(2);
-
-            //综合分值
-            tempItem.grade = xData.score.init(J.data.CurrentKeyData.total.click_trans_rate,tempItem.click_trans_rate,1).toFixed(1);
-            return tempItem;
-        },
-        parseSingleItemToday:function(tempItem){
-            if(J.pagechart.isToday()){
-                this.todayDataCache[tempItem.id] = {
-                    click_num:tempItem.click_num,
-                    order_num:tempItem.order_num,
-                    click_trans_rate:tempItem.click_trans_rate
-                };
-            };
-            var todayItem = this.todayDataCache[tempItem.id];
-            switch(this.dataType){
-                case 1:
-                    tempItem.val0 = todayItem.click_num;
-                break;
-                case 2:
-                    tempItem.val0 = todayItem.order_num;
-                break;
-                case 3:
-                    tempItem.val0 = todayItem.click_trans_rate;
-                break;
-            };
-            return tempItem;
-        },
-        parseData:function(items){//TODO:挪到J.data中去
-
-            items = items||[];
-            
-
-            var len = items.length,
-                tempItem = null,
-                cItems = [],
-                ytagLen = 0,
-                parentItem = J.data.getSafeCurrentKeyData(this.dataType);
-
-            for(var i=0;i<len;i++){
-                tempItem = items[i];
-                tempItem = this.parseSingleItem(tempItem,parentItem);
-                if(tempItem.isCustomYTag){
-                    cItems.push(tempItem);
-                };
-            };
-            return cItems;
         },
         sort:function(items,asc){
             asc = asc || false;
@@ -224,26 +115,16 @@ J(function($,p,pub){
                 };
             };
         },
-        render:function(cItems,isPrepend){
+        render:function(d,isPrepend){
             var emptyHtml = '<div id="dataList1Tip" class="data_alert data_alertB" data-i18n="tip.noDataAdvice">无数据</div>';
             $('#dataList1Tip').remove();
             if(!isPrepend){
                 this.$d.find('.data_list_item').remove();
             }
-            //console.log('cItems',cItems);
-            if(cItems.length===0){
+            if(d===null){
                 this.$d.empty().html(emptyHtml).oxi18n({},true);
                 return;
             };
-
-            var d0= J.data.getSafeCurrentKeyData(this.dataType),
-                d = {
-                id:'0',
-                babies:cItems,
-                isCustomYTag:true,
-                isRoot:true
-            };
-            this.parseTreeData(d,d0);
 
             //排序
             this.sort(d.babies,false);
@@ -270,7 +151,7 @@ J(function($,p,pub){
                 return;
             };
             this.getData(function(d){
-                p.modRank.data = d = p.modRank.parseData(d);
+                p.modRank.data = d;
                 p.modRank.render(d);
                 if(!p.modRank.dataInited){
                     $('#dataLoading2').remove();
@@ -305,11 +186,11 @@ J(function($,p,pub){
     };
 
     pub.getDataById = function(id){
-        return p.modRank.getDataById(p.modRank.data||[],id);
+        return p.modRank.getDataById(p.modRank.data.babies||[],id);
     };
 
     pub.getTodayDataById = function(id){
-        return p.modRank.todayDataCache[id]||{};
+        return J.data.todayModRankDataCache[id]||{};
     };
 
     pub.antiCover = function(){
